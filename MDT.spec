@@ -5,7 +5,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[('icon.icns', '.'), ('MDT.ui', '.')],
-    hiddenimports=[],
+    hiddenimports=['AppKit', 'AppKit.NSPasteboard'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -33,7 +33,7 @@ exe = EXE(
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
-    entitlements_file=None,
+    entitlements_file='entitlements.plist',
     icon='icon.icns',
 )
 
@@ -41,8 +41,17 @@ app = BUNDLE(
     exe,
     name='MDT.app',
     icon='icon.icns',
-    bundle_identifier=None,
+    bundle_identifier='com.mdt.app',
     info_plist={
-        'LSUIElement': '1'
+        'LSUIElement': '1',
+        'NSAppleEventsUsageDescription': '需要权限来切换桌面',
+        'NSSystemAdministrationUsageDescription': '需要权限来监听鼠标按键',
+        'CFBundleName': 'MDT',
+        'CFBundleDisplayName': 'MDT',
+        'CFBundleGetInfoString': "MDT - 鼠标桌面切换",
+        'CFBundleIdentifier': "com.mdt.app",
+        'CFBundleVersion': "1.0.0",
+        'CFBundleShortVersionString': "1.0.0",
+        'NSHighResolutionCapable': 'True',
     },
 )
