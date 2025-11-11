@@ -7,9 +7,9 @@ import logging
 from pathlib import Path
 import Quartz
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QSystemTrayIcon,
-                             QMenu, QAction, QMessageBox, QCheckBox)
-from PyQt5.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, pyqtSignal, QTimer, QObject
-from PyQt5.QtGui import QDrag, QColor, QIcon, QKeySequence
+                             QMenu, QAction, QMessageBox)
+from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, pyqtSignal, QTimer, QObject
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.uic import loadUi
 import os
 import hashlib
@@ -22,8 +22,6 @@ try:
     NATIVE_CLIPBOARD_AVAILABLE = True
 except ImportError:
     NATIVE_CLIPBOARD_AVAILABLE = False
-
-# ==================== 配置和日志设置 ====================
 
 # 配置文件路径
 CONFIG_DIR = Path.home() / ".mdt"
@@ -50,6 +48,7 @@ if NATIVE_CLIPBOARD_AVAILABLE:
 else:
     logger.warning("AppKit 不可用，将使用 subprocess 方式访问剪切板")
 
+
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -60,7 +59,6 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-# ==================== 配置管理 ====================
 
 class ConfigManager:
     """配置管理器"""
@@ -84,7 +82,7 @@ class ConfigManager:
                     # 迁移旧配置
                     if "feed_watch_enabled" not in config:
                         config["feed_watch_enabled"] = False
-                    if "auto_start" in config: # 移除旧的自启动配置
+                    if "auto_start" in config:  # 移除旧的自启动配置
                         del config["auto_start"]
                     logger.info("配置加载成功")
                     return config
@@ -105,7 +103,6 @@ class ConfigManager:
             logger.error(f"保存配置失败: {e}")
             return False
 
-# ==================== Feed Watch 功能 ====================
 
 class FeedWatchThread(threading.Thread):
     def __init__(self):
@@ -255,8 +252,6 @@ class FeedWatchThread(threading.Thread):
         return hashlib.md5(content.encode('utf-8')).hexdigest()
 
 
-# ==================== 鼠标监听 ====================
-
 # Global variable for the run loop
 run_loop = None
 
@@ -268,6 +263,7 @@ key_bindings = {
 
 # 视觉反馈信号（用于跨线程通知）
 visual_feedback_signal = None
+
 
 def mouse_callback(proxy, type_, event, refcon):
     """Mouse event callback function"""
@@ -283,6 +279,7 @@ def mouse_callback(proxy, type_, event, refcon):
     except Exception as e:
         logger.error(f"鼠标回调错误: {e}")
     return event
+
 
 def start_mouse_listener():
     """Start the mouse listener"""
@@ -312,7 +309,6 @@ def start_mouse_listener():
     except Exception as e:
         logger.error(f"启动监听失败: {e}")
 
-# ==================== 可拖拽标签 ====================
 
 class DraggableLabel(QLabel):
     def __init__(self, text, parent, original_pos, identity):
@@ -366,13 +362,11 @@ class DraggableLabel(QLabel):
         self.animation.setEndValue(self.original_pos)
         self.animation.start()
 
-# ==================== 视觉反馈信号 ====================
 
 class VisualFeedbackSignal(QObject):
     """用于跨线程发送视觉反馈信号"""
     triggered = pyqtSignal(int)
 
-# ==================== 主应用 ====================
 
 class MDTApp(QWidget):
     def __init__(self):
@@ -569,7 +563,6 @@ class MDTApp(QWidget):
         self.hide()
         logger.info("窗口已隐藏")
 
-# ==================== 主程序入口 ====================
 
 def show_permission_dialog():
     """显示权限提示对话框"""
@@ -586,6 +579,7 @@ def show_permission_dialog():
     )
     msg.setStandardButtons(QMessageBox.Ok)
     msg.exec_()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -624,9 +618,7 @@ if __name__ == "__main__":
     if window.config.get("feed_watch_enabled", False):
         toggle_feed_watch(True)
 
-
     quit_action = QAction("退出", parent=app)
-
     show_action.triggered.connect(window.show)
     quit_action.triggered.connect(app.quit)
 
